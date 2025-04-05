@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"slices"
 	"strings"
@@ -23,155 +24,30 @@ func changeFacing(facing [2]int) [2]int {
 }
 
 // how does this brute force solution not work D:
-func checkForLoop(currentPos, facing [2]int, obstacles [][2]int, width, height int) bool {
+func checkForLoop(currentPos, facing [2]int, obstacles map[int][]int, width, height int) bool {
 	checkPos := [2]int{currentPos[0] + facing[0], currentPos[1] + facing[1]}
-	newObstacles := append(obstacles, checkPos)
+	newObstacles := maps.Clone(obstacles)
+	newObstacles[checkPos[0]] = append(newObstacles[checkPos[0]], checkPos[1])
 	visited := map[[2]int]int{}
 	for checkPos[0] < width && checkPos[0] > 0 && checkPos[1] < height && checkPos[1] > 0 {
 		checkPos[0] = currentPos[0] + facing[0]
 		checkPos[1] = currentPos[1] + facing[1]
-		isObstacle := false
-		if slices.Contains(newObstacles, checkPos) {
-			facing = changeFacing(facing)
-			isObstacle = true
-		}
-		// for i := range newObstacles {
-		// 	if checkPos == newObstacles[i] {
-		// 		facing = changeFacing(facing)
-		// 		isObstacle = true
-		// 	}
-		// }
-		if !isObstacle {
-			currentPos[0], currentPos[1] = checkPos[0], checkPos[1]
-		}
-		if visited[currentPos] > 2 {
+
+		// this is > 3 to avoid somehow duplicating things or whatever idk
+		if visited[currentPos] > 3 && visited[checkPos] > 3 {
 			return true
 		}
+
 		visited[currentPos] += 1
+
+		if slices.Contains(newObstacles[checkPos[0]], checkPos[1]) {
+			facing = changeFacing(facing)
+			continue
+		}
+		currentPos[0], currentPos[1] = checkPos[0], checkPos[1]
 	}
 	return false
 }
-
-// honestly at this point it might be easier just to brute force it via walking, even if it takes longer to run
-// too tired for this problem i guess
-// ah butts i just realized i also need to keep in mind that if there's an obstacle in the way it won't work
-// yeah i think maybe a refactor is warranted idk
-
-// func compareSidesLeftTop(leftObstacle [2]int, topObstacle [2]int) bool {
-// 	return (topObstacle[0] != -1 && leftObstacle[0] != -1 &&
-// 		topObstacle[0] < leftObstacle[0] &&
-// 		topObstacle[1]-1 == leftObstacle[1])
-// }
-
-// func compareSidesLeftBottom(leftObstacle [2]int, bottomObstacle [2]int) bool {
-// 	return (bottomObstacle[0] != -1 && leftObstacle[0] != -1 &&
-// 		bottomObstacle[0]-1 == leftObstacle[0] &&
-// 		bottomObstacle[1] > leftObstacle[1])
-// }
-
-// func compareSidesRightTop(rightObstacle [2]int, topObstacle [2]int) bool {
-// 	return (topObstacle[0] != -1 && rightObstacle[0] != -1 &&
-// 		topObstacle[0]+1 == rightObstacle[0] &&
-// 		topObstacle[1] < rightObstacle[1])
-// }
-
-// func compareSidesRightBottom(rightObstacle [2]int, bottomObstacle [2]int) bool {
-// 	return (bottomObstacle[0] != 1 && rightObstacle[0] != 1 &&
-// 		bottomObstacle[0] > rightObstacle[0] &&
-// 		bottomObstacle[1]-1 == rightObstacle[1])
-// }
-
-// // takes optional indexes (-1 for nil) and returns an empty list if incorrect
-// // given >1 indexes, look through the obstacles list to match other indexes
-// // to make the "corners" of the square
-// func checkSquare(obstacles [][2]int, topIndex, rightIndex, bottomIndex, leftIndex int) []int {
-// 	originalSolution := []int{topIndex, rightIndex, bottomIndex, leftIndex}
-// 	// attemptedSolutions: obstaclesIndex to list of tried top/right/bottom/left
-// 	attemptedSolutions := []int{}
-// 	previousSolutionLen := len(attemptedSolutions)
-// startCheckOver:
-// 	solution := []int{topIndex, rightIndex, bottomIndex, leftIndex}
-// 	for i, obstacle := range obstacles {
-// 		if slices.Contains(solution, i) || slices.Contains(attemptedSolutions, i) {
-// 			continue
-// 		}
-// 		if topIndex != -1 || bottomIndex != -1 {
-// 			topObstacle := [2]int{-1, -1}
-// 			bottomObstacle := [2]int{-1, -1}
-// 			if topIndex != -1 {
-// 				topObstacle = obstacles[topIndex]
-// 			}
-// 			if bottomIndex != -1 {
-// 				bottomObstacle = obstacles[bottomIndex]
-// 			}
-
-// 			if leftIndex == -1 {
-// 				leftObstacle := obstacle
-// 				// basic logic for these kinds of if statements:
-// 				// if topIndex == -1, left side and right side will be false, so we can continue
-// 				// if topIndex != -1, left side will be true, so we only continue if right side is also true (which we want)
-// 				// either way, the expression returns true in cases we want to continue the check
-// 				// so by stringing two together, the && will only compare both if both are > -1
-// 				// otherwise, false == false will be true, so we can compare against the index > -1
-// 				if (topIndex != -1) == (compareSidesLeftTop(leftObstacle, topObstacle)) &&
-// 					(bottomIndex != -1) == (compareSidesLeftBottom(leftObstacle, bottomObstacle)) {
-// 					leftIndex = i
-// 					solution[3] = leftIndex
-// 				}
-// 			}
-// 			if rightIndex == -1 {
-// 				rightObstacle := obstacle
-// 				if (topIndex != -1) == (compareSidesRightTop(rightObstacle, topObstacle)) &&
-// 					(bottomIndex != -1) == (compareSidesRightBottom(rightObstacle, bottomObstacle)) {
-// 					rightIndex = i
-// 					solution[1] = rightIndex
-// 				}
-// 			}
-// 		}
-
-// 		if rightIndex != -1 || leftIndex != -1 {
-// 			rightObstacle := [2]int{-1, -1}
-// 			leftObstacle := [2]int{-1, -1}
-// 			if rightIndex != -1 {
-// 				rightObstacle = obstacles[rightIndex]
-// 			}
-// 			if leftIndex != -1 {
-// 				leftObstacle = obstacles[leftIndex]
-// 			}
-
-// 			if topIndex == -1 {
-// 				topObstacle := obstacle
-// 				if (leftIndex != -1) == (compareSidesLeftTop(leftObstacle, topObstacle)) &&
-// 					(rightIndex != -1) == (compareSidesRightTop(rightObstacle, topObstacle)) {
-// 					topIndex = i
-// 					solution[0] = leftIndex
-// 				}
-// 			}
-// 			if bottomIndex == -1 {
-// 				bottomObstacle := obstacle
-// 				if (leftIndex != -1) == (compareSidesLeftBottom(leftObstacle, bottomObstacle)) &&
-// 					(rightIndex != -1) == (compareSidesRightBottom(rightObstacle, bottomObstacle)) {
-// 					bottomIndex = i
-// 					solution[2] = bottomIndex
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	if slices.Contains(solution, -1) {
-// 		for i, index := range solution {
-// 			if index != -1 && originalSolution[i] != index {
-// 				attemptedSolutions = append(attemptedSolutions, index)
-// 			}
-// 		}
-// 		if len(attemptedSolutions) == previousSolutionLen || len(attemptedSolutions)+2 == len(obstacles) {
-// 			return []int{}
-// 		}
-// 		previousSolutionLen = len(attemptedSolutions)
-// 		goto startCheckOver
-// 	}
-// 	return solution
-// }
 
 func main() {
 	// input is a grid with:
@@ -187,7 +63,8 @@ func main() {
 	}
 
 	startingPos := [2]int{}
-	obstacles := [][2]int{}
+	// a map of obstacles by row and column
+	obstacleMap := map[int][]int{}
 	rows := strings.Split(string(input), "\n")
 	for y, row := range rows {
 		for x, col := range row {
@@ -196,7 +73,7 @@ func main() {
 				startingPos[1] = x
 			}
 			if col == '#' {
-				obstacles = append(obstacles, [2]int{y, x})
+				obstacleMap[y] = append(obstacleMap[y], x)
 			}
 		}
 	}
@@ -205,7 +82,6 @@ func main() {
 	facing := [2]int{-1, 0}
 	visited := [][2]int{startingPos}
 	possibleObstructions := [][2]int{}
-mLoop:
 	for {
 		checkPos := [2]int{}
 		checkPos[0] = currentPos[0] + facing[0]
@@ -214,26 +90,21 @@ mLoop:
 		if !onExistingPath {
 			visited = append(visited, currentPos)
 		}
-		// fmt.Println("checking", checkPos)
-		if checkPos[0] >= len(rows[currentPos[1]]) || checkPos[0] < 0 || checkPos[1] >= len(rows) || checkPos[1] < 0 {
-			break
-		}
 
 		// fmt.Println("visited:", visited)
-		for i := range obstacles {
-			// fmt.Println("obstacle:", obstacles[i])
-			if checkPos == obstacles[i] {
-				// fmt.Println("facing:", facing)
-				facing = changeFacing(facing)
-				// fmt.Println("changed facing to", facing)
-				continue mLoop
-			}
+		if slices.Contains(obstacleMap[checkPos[0]], checkPos[1]) {
+			facing = changeFacing(facing)
+			continue
 		}
 
 		// part 2: check for ways to make loops with new obstructions
-		// we know the next position isn't an obstruction, so we continue
-		if checkForLoop(currentPos, facing, obstacles, len(rows[currentPos[1]]), len(rows)) {
+		// we know the next position isn't an obstruction, so let's try adding one
+		if checkForLoop(currentPos, facing, obstacleMap, len(rows[currentPos[1]]), len(rows)) {
 			possibleObstructions = append(possibleObstructions, checkPos)
+		}
+
+		if checkPos[0] >= len(rows[currentPos[1]]) || checkPos[0] < 0 || checkPos[1] >= len(rows) || checkPos[1] < 0 {
+			break
 		}
 
 		// fmt.Println("update current position")
