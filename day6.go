@@ -174,6 +174,7 @@ func main() {
 	currentPos[0], currentPos[1] = startingPos[0], startingPos[1]
 	facing := [2]int{-1, 0}
 	visited := [][2]int{startingPos}
+	possibleObstructions := [][2]int{}
 mLoop:
 	for {
 		if !slices.Contains(visited, currentPos) {
@@ -200,12 +201,17 @@ mLoop:
 		// fmt.Println("update current position")
 		if !slices.Contains(visited, checkPos) {
 			visited = append(visited, checkPos)
+		} else {
+			// part 2: check for added obstacles that would make a loop
+			// if we're on a position that has been visited, that might be enough?
+			possibleObstructions = append(possibleObstructions, checkPos)
 		}
 		currentPos[0], currentPos[1] = checkPos[0], checkPos[1]
 		// fmt.Println("visited:", visited)
 	}
 
 	fmt.Println(len(visited))
+	fmt.Println(len(possibleObstructions))
 
 	// part 2: count number of loops possible from starting position with one added obstacle
 	// basically, somewhere where there's 3 obstacles:
@@ -227,46 +233,46 @@ mLoop:
 	//   - the left obstacle needs to be 1 higher than the lowest obstacle     (obstacle{y-1,x})
 	//   - the right obstacle needs to be 1 lower than the highest obstacle    (obstacle{y+1,x})
 	// possibleChanges stores the indexes of obstacles to prevent duplicates
-	possibleChanges := [][]int{}
-	for i, obstacle := range obstacles {
-		for j := i + 1; j < len(obstacles); j++ {
-			// could the i obstacle go on the left, and j be the bottom?
-			if compareSidesLeftBottom(obstacle, obstacles[j]) {
-				fmt.Println("checking left + bottom")
-				possibleChange := checkSquare(obstacles, -1, -1, j, i)
-				fmt.Println("checked left + bottom", len(possibleChange))
-				if len(possibleChange) == 4 {
-					possibleChanges = append(possibleChanges, possibleChange)
-				}
-			}
-			// could the i obstacle go on the right, and j be the top?
-			if compareSidesRightTop(obstacle, obstacles[j]) {
-				fmt.Println("checking right + top")
-				possibleChange := checkSquare(obstacles, j, i, -1, -1)
-				fmt.Println("checked right + top", len(possibleChange))
-				if len(possibleChange) == 4 {
-					possibleChanges = append(possibleChanges, possibleChange)
-				}
-			}
-			// could the i obstacle go on the top, and j be the left?
-			if compareSidesLeftTop(obstacles[j], obstacle) {
-				fmt.Println("checking left + top")
-				possibleChange := checkSquare(obstacles, i, -1, -1, j)
-				fmt.Println("checked left + top", len(possibleChange))
-				if len(possibleChange) == 4 {
-					possibleChanges = append(possibleChanges, possibleChange)
-				}
-			}
-			// could the i obstacle go on the bottom, and j be the right?
-			if compareSidesRightBottom(obstacles[j], obstacle) {
-				fmt.Println("checking right + bottom")
-				possibleChange := checkSquare(obstacles, -1, i, j, -1)
-				fmt.Println("checking right + bottom", len(possibleChange))
-				if len(possibleChange) == 4 {
-					possibleChanges = append(possibleChanges, possibleChange)
-				}
-			}
-		}
-	}
-	fmt.Println(len(possibleChanges))
+	// possibleChanges := [][]int{}
+	// for i, obstacle := range obstacles {
+	// 	for j := i + 1; j < len(obstacles); j++ {
+	// 		// could the i obstacle go on the left, and j be the bottom?
+	// 		if compareSidesLeftBottom(obstacle, obstacles[j]) {
+	// 			fmt.Println("checking left + bottom")
+	// 			possibleChange := checkSquare(obstacles, -1, -1, j, i)
+	// 			fmt.Println("checked left + bottom", len(possibleChange))
+	// 			if len(possibleChange) == 4 {
+	// 				possibleChanges = append(possibleChanges, possibleChange)
+	// 			}
+	// 		}
+	// 		// could the i obstacle go on the right, and j be the top?
+	// 		if compareSidesRightTop(obstacle, obstacles[j]) {
+	// 			fmt.Println("checking right + top")
+	// 			possibleChange := checkSquare(obstacles, j, i, -1, -1)
+	// 			fmt.Println("checked right + top", len(possibleChange))
+	// 			if len(possibleChange) == 4 {
+	// 				possibleChanges = append(possibleChanges, possibleChange)
+	// 			}
+	// 		}
+	// 		// could the i obstacle go on the top, and j be the left?
+	// 		if compareSidesLeftTop(obstacles[j], obstacle) {
+	// 			fmt.Println("checking left + top")
+	// 			possibleChange := checkSquare(obstacles, i, -1, -1, j)
+	// 			fmt.Println("checked left + top", len(possibleChange))
+	// 			if len(possibleChange) == 4 {
+	// 				possibleChanges = append(possibleChanges, possibleChange)
+	// 			}
+	// 		}
+	// 		// could the i obstacle go on the bottom, and j be the right?
+	// 		if compareSidesRightBottom(obstacles[j], obstacle) {
+	// 			fmt.Println("checking right + bottom")
+	// 			possibleChange := checkSquare(obstacles, -1, i, j, -1)
+	// 			fmt.Println("checking right + bottom", len(possibleChange))
+	// 			if len(possibleChange) == 4 {
+	// 				possibleChanges = append(possibleChanges, possibleChange)
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// fmt.Println(len(possibleChanges))
 }
