@@ -25,7 +25,7 @@ func changeFacing(facing [2]int) [2]int {
 
 // how does this brute force solution not work D:
 // am I overcounting??
-// would it be faster to do this by hand at this point? maybe
+// TODO: the correct answer is 1836, this returns 1913????
 func checkForLoop(currentPos, facing [2]int, obstacles map[int][]int, width, height int) bool {
 	checkPos := [2]int{currentPos[0] + facing[0], currentPos[1] + facing[1]}
 	newObstacles := maps.Clone(obstacles)
@@ -54,7 +54,7 @@ func main() {
 	//   - an arrow (^/>/</v) for guard starting position
 	//   - a # for obstructions the guard can't see or move through
 	//   - a . everywhere else
-	input, err := os.ReadFile("day6test.txt")
+	input, err := os.ReadFile("day6input.txt")
 	if err != nil {
 		panic(err)
 	}
