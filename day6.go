@@ -28,17 +28,16 @@ func checkForLoop(currentPos, facing [2]int, obstacles map[int][]int, width, hei
 	checkPos := [2]int{currentPos[0] + facing[0], currentPos[1] + facing[1]}
 	newObstacles := maps.Clone(obstacles)
 	newObstacles[checkPos[0]] = append(newObstacles[checkPos[0]], checkPos[1])
-	visited := map[[2]int]int{}
-	for checkPos[0] < width && checkPos[0] > 0 && checkPos[1] < height && checkPos[1] > 0 {
+	visited := map[[2]int][][2]int{}
+	for checkPos[0] < width && checkPos[0] >= 0 && checkPos[1] < height && checkPos[1] >= 0 {
 		checkPos[0] = currentPos[0] + facing[0]
 		checkPos[1] = currentPos[1] + facing[1]
 
-		// this is > 3 to avoid somehow duplicating things or whatever idk
-		if visited[currentPos] > 3 && visited[checkPos] > 3 {
+		if slices.Contains(visited[currentPos], facing) {
 			return true
 		}
 
-		visited[currentPos] += 1
+		visited[currentPos] = append(visited[currentPos], facing)
 
 		if slices.Contains(newObstacles[checkPos[0]], checkPos[1]) {
 			facing = changeFacing(facing)
