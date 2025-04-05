@@ -177,10 +177,6 @@ func main() {
 	possibleObstructions := [][2]int{}
 mLoop:
 	for {
-		if !slices.Contains(visited, currentPos) {
-			visited = append(visited, currentPos)
-		}
-		// fmt.Println("visited:", visited)
 		checkPos := [2]int{}
 		checkPos[0] = currentPos[0] + facing[0]
 		checkPos[1] = currentPos[1] + facing[1]
@@ -188,6 +184,14 @@ mLoop:
 		if checkPos[0] >= len(rows[currentPos[1]]) || checkPos[0] < 0 || checkPos[1] >= len(rows) || checkPos[1] < 0 {
 			break
 		}
+
+		if !slices.Contains(visited, currentPos) {
+			visited = append(visited, currentPos)
+		} else {
+			// part 2: check for ways to make loops with new obstructions
+			possibleObstructions = append(possibleObstructions, checkPos)
+		}
+		// fmt.Println("visited:", visited)
 
 		for i := range obstacles {
 			// fmt.Println("obstacle:", obstacles[i])
@@ -201,10 +205,6 @@ mLoop:
 		// fmt.Println("update current position")
 		if !slices.Contains(visited, checkPos) {
 			visited = append(visited, checkPos)
-		} else {
-			// part 2: check for added obstacles that would make a loop
-			// if we're on a position that has been visited, that might be enough?
-			possibleObstructions = append(possibleObstructions, checkPos)
 		}
 		currentPos[0], currentPos[1] = checkPos[0], checkPos[1]
 		// fmt.Println("visited:", visited)
