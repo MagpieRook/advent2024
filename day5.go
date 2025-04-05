@@ -76,7 +76,7 @@ func checkUpdateCorrect(update []int64, ordering map[int64][]int64) (bool, int64
 	return true, update[len(update)/2]
 }
 
-func day5() {
+func Day5() {
 	// Input
 	// Section 1: XX|YY -- page XX is before page YY if both are in update
 	// Section 2: XX,YY,ZZ,... -- print pages XX, YY, ZZ for update

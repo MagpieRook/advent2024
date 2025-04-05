@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func day1() {
+func Day1() {
 	// Input is 2 lists (in file) separated by whitespace
 	input, err := os.ReadFile("day1input.txt")
 	if err != nil {

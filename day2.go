@@ -40,7 +40,7 @@ func safetyTest(levels []int64) bool {
 	return true
 }
 
-func day2() {
+func Day2() {
 	// Input is rows of five integers separated by spaces
 	input, err := os.ReadFile("day2input.txt")
 	if err != nil {

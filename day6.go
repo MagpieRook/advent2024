@@ -44,7 +44,7 @@ func checkForLoop(currentPos, facing [2]int, obstacles map[int][]int, width, hei
 	return false
 }
 
-func main() {
+func Day6() {
 	// input is a grid with:
 	//   - an arrow (^/>/</v) for guard starting position
 	//   - a # for obstructions the guard can't see or move through

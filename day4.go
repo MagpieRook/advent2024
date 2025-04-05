@@ -140,7 +140,7 @@ func checkNeighbors(data []string, rowIndex, columnIndex int) int {
 	return ret
 }
 
-func day4() {
+func Day4() {
 	inputBytes, err := os.ReadFile("day4input.txt")
 	if err != nil {
 		panic(err)

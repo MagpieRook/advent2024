@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func day3() {
+func Day3() {
 	input, err := os.ReadFile("day3input.txt")
 	if err != nil {
 		panic(err)
