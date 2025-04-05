@@ -180,19 +180,16 @@ mLoop:
 		checkPos := [2]int{}
 		checkPos[0] = currentPos[0] + facing[0]
 		checkPos[1] = currentPos[1] + facing[1]
+		onExistingPath := slices.Contains(visited, currentPos)
+		if !onExistingPath {
+			visited = append(visited, currentPos)
+		}
 		// fmt.Println("checking", checkPos)
 		if checkPos[0] >= len(rows[currentPos[1]]) || checkPos[0] < 0 || checkPos[1] >= len(rows) || checkPos[1] < 0 {
 			break
 		}
 
-		if !slices.Contains(visited, currentPos) {
-			visited = append(visited, currentPos)
-		} else {
-			// part 2: check for ways to make loops with new obstructions
-			possibleObstructions = append(possibleObstructions, checkPos)
-		}
 		// fmt.Println("visited:", visited)
-
 		for i := range obstacles {
 			// fmt.Println("obstacle:", obstacles[i])
 			if checkPos == obstacles[i] {
@@ -202,10 +199,25 @@ mLoop:
 				continue mLoop
 			}
 		}
-		// fmt.Println("update current position")
-		if !slices.Contains(visited, checkPos) {
-			visited = append(visited, checkPos)
+
+		// part 2: check for ways to make loops with new obstructions
+		// if we're on a path that has been tread before, can we make a loop?
+		// ok but we also need to check ANYWHERE the guard walks, so this is undercounting again
+		if onExistingPath {
+			newFacing := changeFacing(facing)
+			newPos := [2]int{}
+			newPos[0] = currentPos[0] + newFacing[0]
+			newPos[1] = currentPos[1] + newFacing[1]
+			// we know checkPos isn't an obstacle, if we made it one and turned, is it a place we've been?
+			if slices.Contains(visited, newPos) {
+				possibleObstructions = append(possibleObstructions, checkPos)
+			}
 		}
+
+		// fmt.Println("update current position")
+		// if !slices.Contains(visited, checkPos) {
+		// 	visited = append(visited, checkPos)
+		// }
 		currentPos[0], currentPos[1] = checkPos[0], checkPos[1]
 		// fmt.Println("visited:", visited)
 	}
