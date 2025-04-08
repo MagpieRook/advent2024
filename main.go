@@ -30,6 +30,8 @@ func main() {
 		Day7()
 	case 8:
 		fmt.Println(Day8(""))
+	case 9:
+		Day9()
 	default:
 		fmt.Println("Not completed")
 	}

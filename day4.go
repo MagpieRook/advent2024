@@ -151,6 +151,15 @@ func Day4() {
 	total := 0
 	for rowIndex, row := range rows {
 		for columnIndex := range row {
+			total += checkNeighborsXMAS(rows, rowIndex, columnIndex)
+		}
+	}
+
+	fmt.Println(total)
+
+	total = 0
+	for rowIndex, row := range rows {
+		for columnIndex := range row {
 			total += checkNeighbors(rows, rowIndex, columnIndex)
 		}
 	}
